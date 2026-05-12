@@ -53,7 +53,7 @@ class Clock(QWidget):
 
     def draw_clock_face(self, painter):
         painter.drawEllipse(base_width // 2, base_width //2,
-                            *[dim - base_width for dim in window_dimensions])
+                            self.width() - base_width, self.height() - base_width)
 
         center_x = self.width() // 2
         center_y = self.height() // 2
@@ -69,6 +69,39 @@ class Clock(QWidget):
             metrics = painter.fontMetrics()
 
             painter.drawText(int(x - metrics.horizontalAdvance(text) / 2), int(y + metrics.ascent() / 2), str(hour))
+
+
+        radius_lines = min(self.width(), self.height()) // 2 - base_width 
+        for hour_lines in range(1,13):
+            angle = math.radians(hour_lines * 30 - 90)
+
+            x0 = center_x + radius_lines * math.cos(angle)
+            y0 = center_y + radius_lines * math.sin(angle)
+
+            x1 = center_x + (radius_lines - 10) * math.cos(angle)
+            y1 = center_y + (radius_lines - 10) * math.sin(angle)
+
+            painter.drawLine(int(x0), int(y0), int(x1), int(y1)) 
+
+        # Smaller minute lines
+        temp_smallPen = QPen()
+        temp_smallPen.setColor(QColor("black"))
+        temp_smallPen.setWidthF(base_width / 4)
+
+        painter.setPen(temp_smallPen)
+        
+        for lines_rest in range(1,61):
+            angle = math.radians(lines_rest * 6 - 90)
+
+            x0 = center_x + radius_lines * math.cos(angle)
+            y0 = center_y + radius_lines * math.sin(angle)
+
+            x1 = center_x + (radius_lines - 6) * math.cos(angle)
+            y1 = center_y + (radius_lines - 6) * math.sin(angle)
+
+            painter.drawLine(int(x0), int(y0), int(x1), int(y1)) 
+
+
 
     def draw_clock_hand(self, painter, time):
         pass     
