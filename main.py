@@ -42,9 +42,9 @@ class Clock(QWidget):
         self.draw_clock_face(painter)
         
         date = QDateTime.currentDateTime()
-        self.draw_clock_hand(painter, self.hourPen, date.time().hour() + date.time().minute() / 60, 12, self.width() // 2 - base_width * 4)
+        self.draw_clock_hand(painter, self.hourPen, date.time().hour() + date.time().minute() / 60, 12, self.width() // 2 - base_width * 6)
         self.draw_clock_hand(painter, self.minutePen, date.time().minute(), 60, self.width() // 2 - base_width * 5)
-        self.draw_clock_hand(painter, self.secondPen, date.time().second(), 60, self.width() // 2 - base_width * 6)
+        self.draw_clock_hand(painter, self.secondPen, date.time().second(), 60, self.width() // 2 - base_width * 4)
 
         painter.end()
         
