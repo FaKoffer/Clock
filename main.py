@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel
-from PyQt5.QtGui import QPixmap, QPainter, QPen, QColor, QFont
-from PyQt5.QtCore import QDateTime
+from PyQt5.QtGui import QPainter, QPen, QColor, QFont
+from PyQt5.QtCore import QDateTime, QTimer
 import math
 
 window_dimensions = [800, 800]
@@ -30,26 +30,26 @@ class Clock(QWidget):
         self.secondPen.setWidthF(base_width // 4)
 
         self.initUI()
+
+        self.timer = self.startTimer(1000)
         
     #clears screen when called
     def paintEvent(self, event):
-
-        date = QDateTime.currentDateTime()
         painter = QPainter(self)
 
         painter.setFont(self.numbersFont)
         painter.setPen(self.clockPen)
         self.draw_clock_face(painter)
         
-        painter.setPen(self.hourPen)
-        self.draw_clock_hand(painter, date.time().hour())
+        date = QDateTime.currentDateTime()
+        self.draw_clock_hand(painter, self.hourPen, date.time().hour() + date.time().minute() / 60, 12, self.width() // 2 - base_width * 4)
+        self.draw_clock_hand(painter, self.minutePen, date.time().minute(), 60, self.width() // 2 - base_width * 5)
+        self.draw_clock_hand(painter, self.secondPen, date.time().second(), 60, self.width() // 2 - base_width * 6)
 
-        painter.setPen(self.minutePen)
-        self.draw_clock_hand(painter, date.time().minute())
-
-        painter.setPen(self.secondPen)
-        self.draw_clock_hand(painter, date.time().second())
+        painter.end()
         
+    def timerEvent(self, a0):
+        self.update()
 
     def draw_clock_face(self, painter):
         painter.drawEllipse(base_width // 2, base_width //2,
@@ -101,10 +101,18 @@ class Clock(QWidget):
 
             painter.drawLine(int(x0), int(y0), int(x1), int(y1)) 
 
+    def draw_clock_hand(self, painter, pen, time, max_value, hand_length):
+        painter.setPen(pen)
 
+        center_x = self.width() // 2
+        center_y = self.height() // 2
 
-    def draw_clock_hand(self, painter, time):
-        pass     
+        angle = math.radians((time / max_value) * 360 - 90)
+
+        x = center_x + hand_length * math.cos(angle)
+        y = center_y + hand_length * math.sin(angle)
+
+        painter.drawLine(center_x, center_y, int(x), int(y))       
 
     def initUI(self):
         self.resize(*window_dimensions)
